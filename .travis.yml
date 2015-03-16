@@ -1,0 +1,11 @@
+language: julia
+julia:
+  - release
+  - nightly
+install:
+  - julia -E 'Pkg.clone(pwd());'
+  - julia -E 'Pkg.build("NewtonISMP");'
+script:
+  - julia --check-bounds=yes -E 'Pkg.test("NewtonISMP"; coverage=true)'
+after_success:
+  - julia -e 'cd(Pkg.dir("NewtonISMP")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
