@@ -4,9 +4,10 @@ function solve(f, g, H, x0; eps=1e-6, kmax=1000, alpha=0.5, neg_thresh=1e-12)
   x = copy(x0);
   k = 0;
   while norm(g(x)) > eps
-    d = -H(x)\g(x);
+    G = try chol(H(x)); catch [] end
     # Negative curvature or near singular
-    -dot(g(x),d) < neg_thresh*dot(g(x),g(x)) && return 1, x, f(x), g(x), k
+    size(G,1) == 0 && return 1, x, f(x), g(x), k
+    d = -G\(G'\g(x));
     # Line search
     t = 1.0
     while f(x+t*d) >= f(x) + alpha*t*dot(g(x),d)
